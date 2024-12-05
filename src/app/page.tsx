@@ -1,95 +1,195 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+// components/FileUpload.tsx
+"use client";
+import * as React from "react";
+import { useState, useRef, Suspense, lazy } from "react";
+import { styled } from "@mui/material/styles";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import { Container, Button, Alert } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
+import styles from "styled-components";
+import { useRouter } from "next/navigation";
+import Loading from "@/components/common/Loading";
+
+// store
+// import useResultStore, { ResultData } from '@/store/useResultStore';
+
+// api
+import { ExcellApi } from "@/api/ExcellApi";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [file, setFile] = useState<File | null>(null);
+  const [alertFile, setAlertFile] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  // const setResult = useResultStore((state) => state.setResult);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const router = useRouter();
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setAlertFile(false);
+    }
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const selectedFile = event.dataTransfer.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
+  const handlePostFile = async () => {
+    try {
+      if (!file) {
+        setAlertFile(true);
+        return;
+      }
+
+      setIsLoading(true);
+
+      await ExcellApi();
+    } catch (error) {
+      setIsLoading(false);
+      console.error(error);
+    }
+  };
+
+  return (
+    <ResponsiveContainer>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <DropZone
+            onClick={() => inputRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
           >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <CloudUploadIcon style={{ fontSize: 50, color: "#3f51b5" }} />
+            <Typography variant="body1">Files to upload</Typography>
+            <VisuallyHiddenInput
+              type="file"
+              onChange={handleFileChange}
+              ref={inputRef}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          </DropZone>
+
+          <ButtonWrapper>
+            <ResponsiveBoxWrapper>
+              <ResponsiveBox>
+                <InsertDriveFileIcon style={{ marginRight: 8 }} />
+                <Tooltip title={file?.name}>
+                  <FileName variant="body1">{file?.name}</FileName>
+                </Tooltip>
+              </ResponsiveBox>
+              <AlertBox>
+                {alertFile && <Alert severity="error">파일을 올려주세요</Alert>}
+              </AlertBox>
+            </ResponsiveBoxWrapper>
+
+            <Button
+              sx={{ mb: 4 }}
+              style={{
+                backgroundColor: "#3399FF",
+              }}
+              variant="contained"
+              onClick={handlePostFile}
+            >
+              Send
+            </Button>
+          </ButtonWrapper>
+        </>
+      )}
+    </ResponsiveContainer>
   );
 }
+
+const ResponsiveContainer = styled(Container)({
+  width: "100%",
+  "@media (min-width: 768px)": {
+    width: "50%",
+  },
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  color: "black",
+});
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
+const DropZone = styled(Box)({
+  border: "2px dashed #3f51b5",
+  borderRadius: "4px",
+  padding: "50px",
+  textAlign: "center",
+  cursor: "pointer",
+  backgroundColor: "#f9f9f9",
+  "&:hover": {
+    backgroundColor: "#f1f1f1",
+  },
+  width: "80%",
+});
+
+const ResponsiveBoxWrapper = styled(Box)({
+  width: "100%",
+  "@media (min-width: 768px)": {
+    width: "60%",
+  },
+  display: "flex",
+  flexDirection: "column",
+  gap: "5px",
+});
+
+const ResponsiveBox = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  backgroundColor: "#ececec",
+  padding: "10px",
+  marginTop: "16px",
+});
+
+const FileName = styled(Typography)({
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+});
+
+const ImageWrapper = styled(Box)({
+  marginTop: "5px",
+  border: "2px solid #ececec",
+  borderRadius: "4px",
+  padding: "10px",
+});
+
+const ButtonWrapper = styles.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+`;
+
+const AlertBox = styled(Box)({
+  minHeight: "50px",
+});
