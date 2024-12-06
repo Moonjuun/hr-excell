@@ -57,10 +57,11 @@ export default function Home() {
 
       setIsLoading(true);
 
-      await ExcellApi();
+      await ExcellApi(file);
     } catch (error) {
-      setIsLoading(false);
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

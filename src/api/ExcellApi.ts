@@ -1,10 +1,22 @@
 import axios from "axios";
 
-export const ExcellApi = async () => {
+export const ExcellApi = async (file: File) => {
   try {
-    const response = await axios.get("http://localhost:5000/api/data");
+    const formData = new FormData();
+    formData.append("file", file); // 파일 데이터 추가
+
+    const response = await axios.post(
+      "http://localhost:3030/api/excell/data",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // 반드시 설정
+        },
+      }
+    );
+
     console.log(response.data);
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("Error uploading file:", error);
   }
 };

@@ -22,9 +22,9 @@ declare global {
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" mt={1}>
-      {"제작/광고 문의 "}
+      {"Made By Jun "} {new Date().getFullYear()}
+      <br />
       cmoonjun11@gmail.com
-      {new Date().getFullYear()}
     </Typography>
   );
 }
