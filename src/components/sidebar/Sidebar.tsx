@@ -17,10 +17,10 @@ import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
 
 const menuItems = [
-  { icon: DashboardIcon, label: "Dashboard", href: "/dashboard" },
-  { icon: BarChartIcon, label: "Analytics", href: "/dashboard/analytics" },
-  { icon: PeopleIcon, label: "Customers", href: "/dashboard/customers" },
-  { icon: SettingsIcon, label: "Settings", href: "/dashboard/settings" },
+  { icon: DashboardIcon, label: "Dashboard", href: "/" },
+  { icon: BarChartIcon, label: "Analytics", href: "/analytics" },
+  { icon: PeopleIcon, label: "Register", href: "/register" },
+  { icon: SettingsIcon, label: "Settings", href: "/settings" },
 ];
 
 export default function Sidebar() {

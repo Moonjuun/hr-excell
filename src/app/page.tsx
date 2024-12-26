@@ -10,108 +10,14 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import { Container, Button, Alert } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import styles from "styled-components";
-import { useRouter } from "next/navigation";
-import Loading from "@/components/common/Loading";
 
-// store
-// import useResultStore, { ResultData } from '@/store/useResultStore';
-
-// api
-import { ExcellApi } from "@/api/ExcellApi";
+import DashboardPage from "@/app/dashboard/page";
 
 export default function Home() {
-  const [file, setFile] = useState<File | null>(null);
-  const [alertFile, setAlertFile] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  // const setResult = useResultStore((state) => state.setResult);
-
-  const router = useRouter();
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setAlertFile(false);
-    }
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const selectedFile = event.dataTransfer.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
-  };
-
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-  };
-
-  const handlePostFile = async () => {
-    try {
-      if (!file) {
-        setAlertFile(true);
-        return;
-      }
-
-      setIsLoading(true);
-
-      await ExcellApi(file);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
-    <ResponsiveContainer>
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <>
-          <DropZone
-            onClick={() => inputRef.current?.click()}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-          >
-            <CloudUploadIcon style={{ fontSize: 50, color: "#3f51b5" }} />
-            <Typography variant="body1">Files to upload</Typography>
-            <VisuallyHiddenInput
-              type="file"
-              onChange={handleFileChange}
-              ref={inputRef}
-            />
-          </DropZone>
-
-          <ButtonWrapper>
-            <ResponsiveBoxWrapper>
-              <ResponsiveBox>
-                <InsertDriveFileIcon style={{ marginRight: 8 }} />
-                <Tooltip title={file?.name}>
-                  <FileName variant="body1">{file?.name}</FileName>
-                </Tooltip>
-              </ResponsiveBox>
-              <AlertBox>
-                {alertFile && <Alert severity="error">파일을 올려주세요</Alert>}
-              </AlertBox>
-            </ResponsiveBoxWrapper>
-
-            <Button
-              sx={{ mb: 4 }}
-              style={{
-                backgroundColor: "#3399FF",
-              }}
-              variant="contained"
-              onClick={handlePostFile}
-            >
-              Send
-            </Button>
-          </ButtonWrapper>
-        </>
-      )}
-    </ResponsiveContainer>
+    <>
+      <DashboardPage />
+    </>
   );
 }
 

@@ -38,7 +38,7 @@ const stats = [
 
 export default function DashboardPage() {
   return (
-    <div>
+    <>
       <Typography variant="h4" gutterBottom>
         Overview
       </Typography>
@@ -62,6 +62,6 @@ export default function DashboardPage() {
           </Grid>
         ))}
       </Grid>
-    </div>
+    </>
   );
 }
