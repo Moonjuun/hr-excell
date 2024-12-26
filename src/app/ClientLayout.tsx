@@ -2,10 +2,15 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { PaletteMode, Grid, Container } from "@mui/material";
 import FullAppbar from "@/components/common/FullAppbar";
+import Footer2 from "@/components/common/Footer2";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import Footer2 from "@/components/common/Footer2";
+import Header from "@/components/header/Header";
+import Sidebar from "@/components/sidebar/Sidebar";
+import Footer from "@/components/footer/Footer";
+
+const theme = createTheme();
 
 export default function ClientLayout({
   children,
@@ -42,18 +47,32 @@ export default function ClientLayout({
   }, []);
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ bgcolor: "background.default" }} minHeight={"70vh"}>
-        <FullAppbar
-          mode={mode}
-          toggleColorMode={toggleColorMode}
-          toggleColorLight={toggleColorLight}
-          toggleColorDark={toggleColorDark}
-        />
-        <Box sx={{ mt: 10 }}>{children}</Box>
+      <Box
+        sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+      >
+        <Box sx={{ display: "flex", flex: 1 }}>
+          <Sidebar />
+          <Box
+            component="main"
+            sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+          >
+            <Header />
+            <Box
+              sx={{
+                flexGrow: 1,
+                overflow: "auto",
+                bgcolor: "background.default",
+                p: 3,
+              }}
+            >
+              {children}
+            </Box>
+            <Footer />
+          </Box>
+        </Box>
       </Box>
-      <Footer2 />
     </ThemeProvider>
   );
 }
