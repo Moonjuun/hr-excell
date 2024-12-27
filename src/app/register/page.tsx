@@ -11,6 +11,7 @@ import Tooltip from "@mui/material/Tooltip";
 import styles from "styled-components";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/common/Loading";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 
 import { ExcellApi } from "@/api/ExcellApi";
 
@@ -19,9 +20,19 @@ export default function RegisterPage() {
   const [alertFile, setAlertFile] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  // const setResult = useResultStore((state) => state.setResult);
 
-  const router = useRouter();
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -52,7 +63,11 @@ export default function RegisterPage() {
 
       setIsLoading(true);
 
-      await ExcellApi(file);
+      const res = await ExcellApi(file);
+
+      if (res) {
+        setOpen(true);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -103,6 +118,17 @@ export default function RegisterPage() {
             >
               Send
             </Button>
+
+            <Snackbar
+              open={open}
+              autoHideDuration={6000}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+              <Alert severity="success" variant="filled" sx={{ width: "100%" }}>
+                데이터 등록이 완료되었습니다.
+              </Alert>
+            </Snackbar>
           </ButtonWrapper>
         </>
       )}

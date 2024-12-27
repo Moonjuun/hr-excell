@@ -16,6 +16,7 @@ export const ExcellApi = async (file: File) => {
     );
 
     console.log(response.data);
+    return true;
   } catch (error) {
     console.error("Error uploading file:", error);
   }
