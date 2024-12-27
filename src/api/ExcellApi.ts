@@ -6,7 +6,7 @@ export const ExcellApi = async (file: File) => {
     formData.append("file", file); // 파일 데이터 추가
 
     const response = await axios.post(
-      "http://localhost:3030/api/excell/data",
+      "http://localhost:4000/api/excell/data",
       formData,
       {
         headers: {
